@@ -1,0 +1,82 @@
+#!/etc/python
+def program():
+    print u"""Program szyfrujaco-deszyfrujacy"""
+    print u"""Wybierz z, aby zaszyfrowac lub o, aby odszyfrowac wiadomosc"""
+    A = raw_input("?: ")
+    if A == "z":
+        kluczN = raw_input("Podaj nazwe pliku z kluczem(*.txt): ")
+        try:
+            klucz0 = open(kluczN + ".txt")
+        except:
+            print u"""Plik o podanej nazwie nie istnieje lub ma zle rozszerzenie (*.txt)"""
+        else:
+            klucz = klucz0.read()
+            klucz0.close()
+            tekst_wejsciowy = raw_input("Podaj nazwe pliku (*.txt): ")
+            try:
+                tekst0 = open(tekst_wejsciowy + ".txt")
+            except:
+                print u"""Plik o podanej nazwie nie istnieje lub ma zle rozszerzenie (*.txt)"""
+            else:         
+                if tekst_wejsciowy != kluczN:
+                    tekst = tekst0.read()
+                    tekst0.close()
+                    wiadomosc = []
+                    for i in range(len(tekst)):
+                        if tekst[i] in klucz:
+                            wiadomosc.append(klucz.index(tekst[i]))
+                        else:
+                            wiadomosc.append(tekst[i])
+                    tekst_wyjsciowy = raw_input(u"""Podaj, pod jaka nazwa zapisac plik (*.txt): """)
+                    import pickle
+                    tekst_wyjsciowyT = open(tekst_wyjsciowy + ".txt", 'w')
+                    pickle.dump(wiadomosc, tekst_wyjsciowyT)
+                    tekst_wyjsciowyT.close()
+                    print u"""Tekst zaszyfrowano i zapisano jako: """ + tekst_wyjsciowy + u""".txt"""
+                else:
+                    tekst0.close()
+                    print u"""Klucz jest taki sam jak szyfrowany plik! Wybierz inny klucz, badz plik!"""
+    elif A == "o":
+        kluczN = raw_input("Podaj nazwe pliku z kluczem (*.txt): ")
+        try:
+            klucz0 = open(kluczN + ".txt")
+        except:
+            print u"""Plik o podanej nazwie nie istnieje lub ma zle rozszerzenie (*.txt)"""
+        else:
+            klucz = klucz0.read()
+            klucz0.close()
+            import pickle
+            tekst_wejsciowy = raw_input(u"""Podaj nazwe pliku (*.txt): """)
+            try:
+                tekst0 = open(tekst_wejsciowy + ".txt", 'r')
+            except:
+                print u"""Plik o podanej nazwie nie istnieje lub ma zle rozszerzenie (*.txt)"""
+            else:
+                try:
+                    tekst = pickle.load(tekst0)
+                except:
+                    print u"""Blad!Plik prawdopodobnie nie jest szyfrowany!"""
+                    tekst0.close()
+                else:
+                    tekst0.close()
+                    wiadomosc = []
+                    for i in range(len(tekst)):   
+                        if str(tekst[i]).isdigit():
+                            a = int(tekst[i])
+                            wiadomosc.append(klucz[a])
+                        else:
+                            wiadomosc.append(tekst[i])
+                    tekst_wyjsciowy = raw_input(u"""Podaj, pod jaka nazwa zapisac plik (*.txt): """)
+                    tekst_wyjsciowyT = open(tekst_wyjsciowy + ".txt", 'w')
+                    tekst_wyjsciowyT.writelines(wiadomosc)
+                    tekst_wyjsciowyT.close()
+                    print u"""Tekst odszyfrowano i zapisano jako: """ + tekst_wyjsciowy + u""".txt"""
+
+    else:
+        print u"""Zla litera"""
+    B = raw_input("Restart? [t]: ")
+    if B == "t":
+        program()
+    else:
+        print u"""Milego dnia"""
+program()
