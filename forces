@@ -1,0 +1,94 @@
+#!/etc/python
+import random
+import numpy
+qNa=1
+qCl=-1
+E0=8.85*10**(-12)
+a=float(raw_input("Podaj dlugosc krawedzi: "))
+ #Cl
+ls=[]
+x=a*random.random()
+y=a*random.random()
+z=a*random.random()
+atom=["Cl","-1",x,y,z]
+ls.append(atom)
+n=1
+while n<5:
+    x=a*random.random()
+    y=a*random.random()
+    z=a*random.random()
+    atom=["Cl",-1,x,y,z]
+    m=0
+    for i in ls:
+        xi=ls[m][2]
+        yi=ls[m][3]
+        zi=ls[m][4]
+        m+=1
+        czy=0
+        r=((x-xi)**2+(y-yi)**2+(z-zi)**2)**0.5
+        if r<0.35:
+            czy+=1
+    if czy==0:
+        ls.append(atom)
+        n+=1
+#Na
+n=0
+while n<5:
+    x=a*random.random()
+    y=a*random.random()
+    z=a*random.random()
+    atom=["Na",1,x,y,z]
+    m=0
+    for i in ls:
+        xi=ls[m][2]
+        yi=ls[m][3]
+        zi=ls[m][4]
+        czy=0
+        r=((x-xi)**2+(y-yi)**2+(z-zi)**2)**0.5
+        if ls[m][0]=="Cl":
+            if r<0.402:
+                czy+=1
+        elif ls[m][0]=="Na":
+            if r<0.404:
+                czy+=1
+        m+=1
+    if czy==0:
+        ls.append(atom)
+        n+=1
+plik=open('tabela.txt', 'w')                                           
+                                               
+
+m=0
+for i in range(len(ls)):
+    nazwa=ls[m][0]   
+    F=numpy.zeros((1,3))
+    if ls[m][0]=="Na":
+        qi=qNa
+    else:
+        qi=qCl
+    xi=ls[m][2]
+    yi=ls[m][3]
+    zi=ls[m][4]
+    n=0
+    for j in range(len(ls)):
+        if n!=m:
+            if ls[n][0]=="Na":
+                qj=qNa
+            else:
+                qj=qCl
+
+            xj=ls[n][2]
+            yj=ls[n][3]
+            zj=ls[n][4]
+            R=((xj-xi)**2+(yj-yi)**2+(zj-zi)**2)**0.5
+            x=xj-xi
+            y=yj-yi
+            z=zj-zi
+            r=numpy.array([x,y,z])
+            F+=-qi*qj*r/(4*3.14*E0*R**3)
+        n+=1
+    m+=1
+
+    print " Atom %2d %s wspolrzedne x= %8.3f y= %8.3f z= %8.3f [nm] wektor sily wypadkowej: %13.3f %13.3f %13.3f "% (m,nazwa,xi,yi,zi,F[0,0],F[0,1],F[0,2])
+    plik.write("%2d %s %8.3f %8.3f %8.3f %13.3f %13.3f %13.3f \n"% (m,nazwa,xi,yi,zi,F[0,0],F[0,1],F[0,2]))
+plik.close()
